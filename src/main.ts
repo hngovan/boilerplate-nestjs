@@ -2,11 +2,11 @@ import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
 import { join } from 'path'
+import { AppModule } from './app.module'
 import { ValidationError } from 'class-validator'
 import { ERRORS_DICTIONARY } from './constraints/error-dictionary.constraint'
-import { configSwagger } from './configs/api-docs.config'
+import { configSwagger } from './configs/api-docs'
 
 async function bootstrap() {
   const logger = new Logger(bootstrap.name)
@@ -22,7 +22,6 @@ async function bootstrap() {
       exceptionFactory: (errors: ValidationError[]) =>
         new BadRequestException({
           message: ERRORS_DICTIONARY.VALIDATION_ERROR,
-
           details: errors.map(error => (error.constraints ? Object.values(error.constraints) : [])).flat()
         })
     })

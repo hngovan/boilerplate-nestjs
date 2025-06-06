@@ -1,0 +1,38 @@
+services:
+  app:
+    container_name: nestjs-app
+    image: nestjs-app:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    command: yarn run start:dev
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      PORT: ${PORT}
+      DATABASE_HOST: mysql
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    restart: unless-stopped
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+    environment:
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
