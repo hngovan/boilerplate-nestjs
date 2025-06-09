@@ -22,12 +22,20 @@ services:
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_NAME: ${DATABASE_NAME}
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /usr/src/app
+        - action: sync+restart
+          path: src/
+          target: /usr/src/app/src/
   mysql:
     container_name: mysql
-    image: mysql:8.0
+    image: mysql:8.0.42
     restart: unless-stopped
     ports:
-      - ${DATABASE_PORT}:${DATABASE_PORT}
+      - 3307:${DATABASE_PORT}
     environment:
       MYSQL_DATABASE: ${DATABASE_NAME}
       MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}

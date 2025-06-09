@@ -17,6 +17,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
         database: configService.get('DATABASE_NAME'),
         autoLoadEntities: true,
         synchronize: true
+        // dropSchema: false,
+        // migrations: ['dist/database/migrations/*.js'],
+        // cli: {
+        //   migrationsDir: 'src/database/migrations'
+        // }
       })
     })
   ]

@@ -14,7 +14,7 @@ export function configSwagger(app: INestApplication) {
     .setVersion('1.0')
     .addSecurity('token', { type: 'http', scheme: 'bearer' })
     .build()
-  const document = SwaggerModule.createDocument(app, config)
+  const documentFactory = () => SwaggerModule.createDocument(app, config)
 
   const http_adapter = app.getHttpAdapter()
   http_adapter.use('/api-docs', (req: Request, res: Response, next: NextFunction) => {
@@ -56,7 +56,7 @@ export function configSwagger(app: INestApplication) {
     next()
   })
 
-  SwaggerModule.setup('api-docs', app, document, {
+  SwaggerModule.setup('api-docs', app, documentFactory, {
     swaggerOptions: { persistAuthorization: true },
     customJs: '/swagger-custom.js',
     customSiteTitle: 'Flash Card Documentation',

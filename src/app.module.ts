@@ -3,8 +3,9 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { AppService } from './app.service'
 import { AppController } from './app.controller'
-import { databaseConfig } from './configs/configuration'
 import { DatabaseModule } from './database/database.module'
+import { AuthModule } from './models/auth/auth.module'
+import { UsersModule } from './models/user/user.module'
 
 @Module({
   imports: [
@@ -20,12 +21,13 @@ import { DatabaseModule } from './database/database.module'
       }),
       validationOptions: { abortEarly: false },
       isGlobal: true,
-      load: [databaseConfig],
       cache: true,
       expandVariables: true,
       envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env'
     }),
-    DatabaseModule
+    DatabaseModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService]
