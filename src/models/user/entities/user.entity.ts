@@ -1,10 +1,11 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { IUser } from '../interfaces/user.interface'
+import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import { BCRYPT_SALT_ROUNDS } from 'src/shared/security.constants'
 import { IsEmail, IsNotEmpty } from 'class-validator'
 
-@Entity()
-export class User {
+@Entity({ name: 'users' })
+export class User implements IUser {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -19,6 +20,17 @@ export class User {
   @Column()
   @IsNotEmpty()
   password: string
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: true })
+  createdAt: Date
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
+  updatedAt: Date
+
+  @BeforeInsert()
+  emailToLowerCase() {
+    this.email = this.email.toLowerCase()
+  }
 
   @BeforeInsert()
   async hashPassword() {
