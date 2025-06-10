@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators'
 
 export interface Response<T> {
   statusCode: number
+  message: string
   data: T
 }
 
@@ -17,6 +18,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     return next.handle().pipe(
       map((data: T) => ({
         statusCode: response.statusCode,
+        message: 'Success',
         data
       }))
     )

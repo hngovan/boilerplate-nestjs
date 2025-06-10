@@ -1,11 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { User } from './entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { BCRYPT_SALT_ROUNDS } from 'src/shared/security.constants'
-import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UsersService {
@@ -20,7 +18,7 @@ export class UsersService {
     })
 
     if (existingUser) {
-      throw new BadRequestException('Account with this email already exists.')
+      throw new ConflictException('Email already existed!')
     }
 
     const user = this.userRepository.create(createUserDto)
@@ -33,7 +31,7 @@ export class UsersService {
     })
   }
 
-  async findOneById(id: number): Promise<User> {
+  async findOneById(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } })
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`)
@@ -42,15 +40,14 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
-    const user = await this.userRepository.findOne({ where: { email } })
+    const user = await this.userRepository.findOneBy({ email })
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`)
+      throw new NotFoundException(`Email ${email} not found`)
     }
-
     return user
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.preload({
       id,
       ...updateUserDto
@@ -60,14 +57,10 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`)
     }
 
-    if (updateUserDto.password) {
-      user.password = await bcrypt.hash(updateUserDto.password, BCRYPT_SALT_ROUNDS)
-    }
-
     return this.userRepository.save(user)
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const user = await this.userRepository.findOne({ where: { id } })
 
     if (!user) {
@@ -77,5 +70,11 @@ export class UsersService {
     await this.userRepository.remove(user)
 
     return { message: `User with ID ${id} removed successfully` }
+  }
+
+  async setCurrentRefreshToken(user_id: string, hashed_token: string) {
+    await this.userRepository.update(user_id, {
+      currentRefreshToken: hashed_token
+    })
   }
 }

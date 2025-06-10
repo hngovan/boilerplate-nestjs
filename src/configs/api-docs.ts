@@ -58,7 +58,7 @@ export function configSwagger(app: INestApplication) {
 
   SwaggerModule.setup('api-docs', app, documentFactory, {
     swaggerOptions: { persistAuthorization: true },
-    customJs: '/swagger-custom.js',
+    // customJs: '/swagger-custom.js',
     customSiteTitle: 'Flash Card Documentation',
     customfavIcon: '/swagger.ico'
   })

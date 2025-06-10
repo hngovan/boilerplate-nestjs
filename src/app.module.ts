@@ -1,11 +1,14 @@
 import * as Joi from 'joi'
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { AppService } from './app.service'
 import { AppController } from './app.controller'
 import { DatabaseModule } from './database/database.module'
 import { AuthModule } from './models/auth/auth.module'
 import { UsersModule } from './models/user/user.module'
+import { HttpExceptionFilter } from './common/filters/http-exception.filter'
+import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 
 @Module({
   imports: [
@@ -30,6 +33,16 @@ import { UsersModule } from './models/user/user.module'
     UsersModule
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor
+    }
+  ]
 })
 export class AppModule {}

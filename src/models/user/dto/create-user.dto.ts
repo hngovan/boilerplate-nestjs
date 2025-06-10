@@ -1,4 +1,15 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+  MaxLength,
+  MinLength,
+  ValidateNested
+} from 'class-validator'
+import { CreateAddressDto } from './create-address.dto'
+import { Type } from 'class-transformer'
 
 export class CreateUserDto {
   @IsString()
@@ -8,9 +19,16 @@ export class CreateUserDto {
 
   @IsEmail()
   @IsNotEmpty()
+  @MaxLength(50)
   email: string
 
   @IsString()
   @MinLength(6)
+  @IsStrongPassword()
   password: string
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateAddressDto)
+  address?: CreateAddressDto[]
 }
